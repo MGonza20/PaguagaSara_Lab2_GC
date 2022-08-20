@@ -1,17 +1,17 @@
 from pyexpat import model
 from gl import Renderer, color, V3, V2
 from texture import Texture
-from shaders import flat, unlit, gourad, toon, glow, textureBlend, grafito, newS, barcodeEffect 
+from shaders import flat, unlit, gourad, toon, glow, textureBlend, grafito, newS, barcodeEffect, squaredEffect
 
 
 rend = Renderer(960, 540)
 
 rend.active_texture = Texture("models/model.bmp")
 modelPosition = V3(0, 0, -10)
-rend.active_shader = barcodeEffect
+rend.active_shader = squaredEffect
 rend.glLoadModel("models/model.obj",
                 translate = V3(0, 0, -10),
                 scale = V3(3,3,3),
                 rotate = V3(0,0,0))
-rend.glFinish("outputs/barcodeEffect.bmp")
+rend.glFinish("outputs/squaredEffect.bmp")
 

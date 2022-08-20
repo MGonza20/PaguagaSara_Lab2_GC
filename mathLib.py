@@ -39,6 +39,9 @@ def normV(v):
 
     return  [(x/norm), (y/norm), (z/norm)] 
 
+def dist(v1, v2):
+    return ((v2.x-v1.x)**2 + (v2.y-v1.y)**2)**0.5
+
 def dotProduct(v1, v2):
     v1x, v1y, v1z = v1[0], v1[1], v1[2]
     v2x, v2y, v2z = v2[0], v2[1], v2[2]

@@ -1,4 +1,7 @@
-from mathLib import dotProduct
+from mathLib import dotProduct, normV, dist
+from collections import namedtuple
+
+V2 = namedtuple('Point2', ['x', 'y'])
 
 
 def flat(render, **kwargs):
@@ -401,3 +404,53 @@ def barcodeEffect(render, **kwargs):
         return r, g, b
     else:
         return 0,0,0
+
+def flooor(num):
+    return int(num//1)
+
+
+def squaredEffect(render, **kwargs):
+
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        b *= texColor[2]
+        g *= texColor[1]
+        r *= texColor[0]    
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                      nA[1] * u + nB[1] * v + nC[1] * w,
+                      nA[2] * u + nB[2] * v + nC[2] * w]
+
+    newY = y/render.height
+    newX = x/render.width
+    intensity =  float(((newX*15)//1)/15)
+    intensity *=  ((newY*15)//1)/15
+    
+
+    b *= intensity
+    g *= intensity
+    r *= intensity
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
+
+
+
