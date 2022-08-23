@@ -83,7 +83,7 @@ def dcCombinedShader():
 def menu():
     print('\nLab 2 - Graficas\n\nOpciones:\n1. Squares Effect \
            \n2. Gradient Mounts\n3. Gradient Shader\n4. Half Dark Half Clear Shader \
-           \n5. Pi Shadow Shader\n6. Dark Clear Combined Shader\n7. Photoshoot de shaders favoritos\n8. Salir\n')
+           \n5. Pi Shadow Shader\n6. Dark Clear Combined Shader\n7. Photoshoot de mis shaders favoritos\n8. Salir\n')
 
 menu()
 option = int(input('Elija shader para el modelo: '))
