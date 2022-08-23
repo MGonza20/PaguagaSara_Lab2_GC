@@ -1,9 +1,5 @@
-from pyexpat import model
-from gl import Renderer, color, V3, V2
-from texture import Texture
-from shaders import flat, unlit, gourad, toon, glow, textureBlend, newS, barcodeEffect, justC, flatty, flatNcolor, squaredEffect, squaresNgradient, gouradyy
+from gl import Renderer, V3
 from shadersMoi import dcHalf, piShadow, dcCombined, sqrEffect, gradient, gradientMounts
-
 
 
 # Photoshoot - My favs
