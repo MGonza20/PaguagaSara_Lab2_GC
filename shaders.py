@@ -1,8 +1,5 @@
-from mathLib import dotProduct, normV, dist
-from collections import namedtuple
-
-V2 = namedtuple('Point2', ['x', 'y'])
-
+import math
+from mathLib import dotProduct
 
 def flat(render, **kwargs):
     # Normal calculada por poligono
@@ -405,12 +402,261 @@ def barcodeEffect(render, **kwargs):
     else:
         return 0,0,0
 
-def flooor(num):
-    return int(num//1)
+
+def flatty(render, **kwargs):
+    
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    triangleNormal = kwargs["triangleNormal"] 
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+    
+    b /= 255
+    g /= 255
+    r /= 255
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+    newY = y/render.height
+    newX = x/render.width
+    intensity *=  float(((newX*20)//1)/20) 
+    intensity *=  ((newY*15)//1)/15
+
+    yellow = (1,1,0)
+
+
+    b *= intensity * yellow[2] 
+    g *= intensity * yellow[1] 
+    r *= intensity * yellow[0]
+
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0, 0, 0
+
+
+def radiant(render, **kwargs):
+
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        b *= texColor[2]
+        g *= texColor[1]
+        r *= texColor[0]
+    
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                      nA[1] * u + nB[1] * v + nC[1] * w,
+                      nA[2] * u + nB[2] * v + nC[2] * w]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+
+    b *= intensity
+    g *= intensity
+    r *= intensity
+    
+
+    camForward = [render.camMatrix[0][2],
+                  render.camMatrix[1][2],
+                  render.camMatrix[2][2]]
+
+    glowAmount = 1- dotProduct(triangleNormal, camForward)
+
+    if glowAmount <= 0: 
+        glowAmount = 0
+
+    yellow = (1,1,0)
+
+    b += yellow[2] * glowAmount
+    g += yellow[1] *  glowAmount
+    r += yellow[0] * x * glowAmount
+
+    if b > 1: b = 1
+    if g > 1: g = 1
+    if r > 1: r = 1
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
+
+
+def justC(render, **kwargs):
+
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        b *= texColor[2]
+        g *= texColor[1]
+        r *= texColor[0]
+    
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                      nA[1] * u + nB[1] * v + nC[1] * w,
+                      nA[2] * u + nB[2] * v + nC[2] * w]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+
+    b *= intensity
+    g *= intensity
+    r *= intensity
+    
+    camForward = [render.camMatrix[0][2],
+                  render.camMatrix[1][2],
+                  render.camMatrix[2][2]]
+
+    glowAmount = 1- dotProduct(triangleNormal, camForward)
+
+    if glowAmount <= 0: 
+        glowAmount = 0
+
+    yellow = (1,1,0)
+
+    b += yellow[2] * glowAmount
+    g += yellow[1] *  glowAmount
+    r += yellow[0] * glowAmount
+
+    if b > 1: b = 1
+    if g > 1: g = 1
+    if r > 1: r = 1
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
+
+
+def flatNcolor(render, **kwargs):
+    # Normal calculada por poligono
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    triangleNormal = kwargs["triangleNormal"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        yellow = (1,1,0)
+
+        b *= texColor[2] * yellow[2]
+        g *= texColor[1] * yellow[1]
+        r *= texColor[0] * yellow[0]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+
+    b *= intensity
+    g *= intensity
+    r *= intensity
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
 
 
 def squaredEffect(render, **kwargs):
 
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        
+        colorA = (1, 0, 0)
+        colorB = (0, 1, 0)
+        colorC = (0, 0, 1)
+        
+
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        yellow = (1,1,0)
+
+        newY = y/render.height
+        newX = x/render.width
+
+        b *= texColor[2] 
+        g *= texColor[1] 
+        r *= texColor[0] 
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                      nA[1] * u + nB[1] * v + nC[1] * w,
+                      nA[2] * u + nB[2] * v + nC[2] * w]
+
+    
+    newY = y/render.height
+    newX = x/render.width
+    intensity =  float(((newX*15)//1)/15) 
+    intensity *=  ((newY*15)//1)/15
+    
+
+    b *= intensity
+    g *= intensity 
+    r *= intensity 
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
+
+
+
+def squaresNgradient(render, **kwargs):
+    # Normal calculada por vertice
     u, v, w = kwargs["baryCoords"]
     b, g, r = kwargs["vColor"]
     tA, tB, tC = kwargs["texCoords"]
@@ -431,21 +677,28 @@ def squaredEffect(render, **kwargs):
 
         b *= texColor[2]
         g *= texColor[1]
-        r *= texColor[0]    
+        r *= texColor[0]
 
     triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
-                      nA[1] * u + nB[1] * v + nC[1] * w,
-                      nA[2] * u + nB[2] * v + nC[2] * w]
+                     nA[1] * u + nB[1] * v + nC[1] * w,
+                     nA[2] * u + nB[2] * v + nC[2] * w]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
 
     newY = y/render.height
     newX = x/render.width
-    intensity =  float(((newX*15)//1)/15)
-    intensity *=  ((newY*15)//1)/15
     
+    intensity *=  float(((newX*20)//1)/20) 
+    intensity *=  ((newY*20)//1)/20
 
-    b *= intensity
-    g *= intensity
-    r *= intensity
+
+    b, g, r = 1, 1, 0
+    
+    b *= (intensity *3.1)
+    g *= (intensity *3.1)
+    r *= (intensity *3.1)
+    
 
     if intensity > 0:
         return r, g, b
@@ -453,4 +706,109 @@ def squaredEffect(render, **kwargs):
         return 0,0,0
 
 
+def squaresNgradient(render, **kwargs):
+    # Normal calculada por vertice
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
 
+    b /= 255
+    g /= 255
+    r /= 255
+
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        b *= texColor[2]
+        g *= texColor[1]
+        r *= texColor[0]
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                     nA[1] * u + nB[1] * v + nC[1] * w,
+                     nA[2] * u + nB[2] * v + nC[2] * w]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+
+    newY = y/render.height
+    newX = x/render.width
+    
+    intensity *=  float(((newX*20)//1)/20) 
+    intensity *=  ((newY*20)//1)/20
+
+
+    b, g, r = 1, 1, 0
+    
+    b *= (intensity *3.1)
+    g *= (intensity *3.1)
+    r *= (intensity *3.1)
+    
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0,0,0
+
+
+def gouradyy(render, **kwargs):
+    # Normal calculada por vertice
+    u, v, w = kwargs["baryCoords"]
+    b, g, r = kwargs["vColor"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    x = kwargs["xValue"]
+    y = kwargs["yValue"]
+
+    b /= 255
+    g /= 255
+    r /= 255
+
+    if render.active_texture:
+        # P = Au + Bv + Cw
+        tU = tA[0] * u + tB[0] * v + tC[0] * w
+        tV = tA[1] * u + tB[1] * v + tC[1] * w
+
+        texColor = render.active_texture.getColor(tU, tV)
+
+        b *= texColor[2]
+        g *= texColor[1]
+        r *= texColor[0]
+
+    triangleNormal = [nA[0] * u + nB[0] * v + nC[0] * w,
+                     nA[1] * u + nB[1] * v + nC[1] * w,
+                     nA[2] * u + nB[2] * v + nC[2] * w]
+
+    negDirLight = [-render.dirLight.x, -render.dirLight.y, -render.dirLight.z]
+    intensity = dotProduct(triangleNormal, negDirLight)
+
+    newY = y/render.height
+    newX = x/render.width
+
+    angle = math.atan2(newX - 0.5, newY - 0.5)
+    
+    # intensity *=  float(((newX*20)//1)/20) 
+    # intensity *=  ((newY*20)//1)/20
+
+    if newY > 0.56:
+        intensity *= angle 
+        intensity %= 1
+        b, g, r = 1, 1, 0
+    else:
+        b, g, r = 1, 1, 0
+    
+    b *= (intensity )
+    g *= (intensity )
+    r *= (intensity )
+    
+
+    if intensity > 0:
+        return r, g, b
+    else:
+        return 0, 0, 0
